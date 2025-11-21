@@ -25,7 +25,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 
 public class StockKeeperComponent extends JPanel {
-    private NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+    public static NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
     private DefaultTableModel model;
     private JTable table;
     private final String[] cols = { "Nama Barang", "Jumlah Barang", "Harga Barang" };
@@ -93,7 +93,8 @@ public class StockKeeperComponent extends JPanel {
                 int jumlah = Integer.parseInt(getFieldValue(1));
                 double harga = Double.parseDouble(getFieldValue(2));
 
-                checkInputNumber(jumlah, harga);
+                if (checkInputNumber(jumlah, harga))
+                    return;
 
                 Barang b = new Barang(getFieldValue(0), jumlah, harga);
                 Barang.daftarBarang.add(b);
@@ -224,11 +225,13 @@ public class StockKeeperComponent extends JPanel {
         return false;
     }
 
-    private final void checkInputNumber(int jml, double hrg) {
+    private final boolean checkInputNumber(int jml, double hrg) {
         if (jml < 0 || hrg < 0) {
             JOptionPane.showMessageDialog(this, "Jumlah dan Harga harus bernilai positif.");
-            return;
+            return true;
         }
+
+        return false;
     }
 
     private final String getFieldValue(int index) {

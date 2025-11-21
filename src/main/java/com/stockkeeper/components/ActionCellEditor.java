@@ -78,7 +78,7 @@ class ActionCellEditor extends AbstractCellEditor implements TableCellEditor {
                         // Update model dan list barang
                         model.setValueAt(newNama, row, 1);
                         model.setValueAt(newJumlah, row, 2);
-                        model.setValueAt(newHarga, row, 3);
+                        model.setValueAt(StockKeeperComponent.rupiahFormat.format(newHarga), row, 3);
 
                         Barang b = Barang.daftarBarang.get(row);
                         b.setNamaBarang(newNama);
