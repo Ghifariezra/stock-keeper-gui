@@ -1,80 +1,88 @@
 name: Test All OS Builds
 
 on:
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
-    build-windows:
-        runs-on: windows-latest
-        steps:
-            - uses: actions/checkout@v4
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - uses: actions/setup-java@v4
-              with:
-                  java-version: 21
-                  distribution: temurin
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
 
-            - name: Build project
-              run: mvn -B package --file pom.xml
+      - name: Build project
+        run: mvn -B package --file pom.xml
 
-            - name: Build EXE and MSI
-              run: |
-                  jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.ico --type exe --win-shortcut --win-menu --dest dist/
-                  jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.ico --type msi --win-shortcut --win-menu --dest dist/
+      - name: Build EXE and MSI
+        run: |
+          jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.ico --type exe --win-shortcut --win-menu --dest dist/
+          jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.ico --type msi --win-shortcut --win-menu --dest dist/
 
-            - uses: actions/upload-artifact@v4
-              with:
-                  name: windows-build
-                  files: dist/*
-                  compression-level: 0
+      - name: Compress artifacts
+        run: 7z a -t7z -mx=9 windows-build.7z ./dist/*
 
-    build-linux:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: windows-build.7z
 
-            - uses: actions/setup-java@v4
-              with:
-                  java-version: 21
-                  distribution: temurin
 
-            - name: Install Linux package tools
-              run: sudo apt-get install -y rpm fakeroot
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Build project
-              run: mvn -B package --file pom.xml
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
 
-            - name: Build DEB and RPM
-              run: |
-                  jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.png --type deb --dest dist/
-                  jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.png --type rpm --dest dist/
+      - name: Install Linux package tools
+        run: sudo apt-get install -y rpm fakeroot
 
-            - uses: actions/upload-artifact@v4
-              with:
-                  name: linux-build
-                  files: dist/*
-                  compression-level: 0
+      - name: Build project
+        run: mvn -B package --file pom.xml
 
-    build-macos:
-        runs-on: macos-latest
-        steps:
-            - uses: actions/checkout@v4
+      - name: Build DEB and RPM
+        run: |
+          jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.png --type deb --dest dist/
+          jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.png --type rpm --dest dist/
 
-            - uses: actions/setup-java@v4
-              with:
-                  java-version: 21
-                  distribution: temurin
+      - name: Compress artifacts
+        run: 7z a -t7z -mx=9 linux-build.7z ./dist/*
 
-            - name: Build project
-              run: mvn -B package --file pom.xml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: linux-build.7z
 
-            - name: Build PKG and DMG
-              run: |
-                  jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.icns --type pkg --dest dist/
-                  jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.icns --type dmg --dest dist/
 
-            - uses: actions/upload-artifact@v4
-              with:
-                  name: macos-build
-                  files: dist/*
-                  compression-level: 0
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+
+      - name: Build project
+        run: mvn -B package --file pom.xml
+
+      - name: Build PKG and DMG
+        run: |
+          jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.icns --type pkg --dest dist/
+          jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.icns --type dmg --dest dist/
+
+      - name: Compress artifacts
+        run: 7z a -t7z -mx=9 macos-build.7z ./dist/*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-build
+          path: macos-build.7z
