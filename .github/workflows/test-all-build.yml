@@ -66,8 +66,8 @@ jobs:
 
             - name: Build PKG and DMG
               run: |
-                  jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/a3okk-ltnpq.icns --type pkg --dest dist/
-                  jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/a3okk-ltnpq.icns --type dmg --dest dist/
+                  jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.icns --type pkg --dest dist/
+                  jpackage --input target --name StockKeeper --main-jar stock-keeper-1.0-SNAPSHOT.jar --main-class com.stockkeeper.Main --icon src/main/resources/warehouse.icns --type dmg --dest dist/
 
             - uses: actions/upload-artifact@v4
               with:
